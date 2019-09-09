@@ -69,7 +69,7 @@ class _LoginScreenState extends State<LoginScreen> {
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         ),
         child: Padding(
           padding: EdgeInsets.only(left: 50, right: 50),
