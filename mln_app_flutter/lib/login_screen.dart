@@ -13,10 +13,17 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   bool isLoadingDone = false;
+  bool isEnableLoginForm = false;
   final textController = TextEditingController();
   @override
   void initState() {
     textController.addListener(_handleTextController);
+    Timer(Duration(seconds: 5), () {
+      setState(() {
+        isLoadingDone = true;
+        isEnableLoginForm = true;
+      });
+    });
     super.initState();
   }
   @override
@@ -27,19 +34,14 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Timer(Duration(seconds: 5), () {
-      setState(() {
-        isLoadingDone = true;
-      });
-    });
     return MaterialApp(
       home: Scaffold(
         body: Container(
           decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage("assets/splash_screen.jpg"),
-                fit: BoxFit.cover,
-              )
+            image: DecorationImage(
+              image: AssetImage("assets/splash_screen.jpg"),
+              fit: BoxFit.cover,
+            )
           ),
           child:Column(
             children: <Widget>[
@@ -49,11 +51,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Image.asset("assets/milano_logo.png"),
                 ),
               ),
-              isLoadingDone ? Expanded(
+              _checkIsNeedToShowLoginForm() ? Expanded(
                 flex: 1,
                 child: Container(),
               ) : Container(),
-              isLoadingDone ? _buildLoginForm() : Container(),
+              _checkIsNeedToShowLoginForm() ? _buildLoginForm() : Container(),
             ],
           ),
         ),
@@ -66,28 +68,28 @@ class _LoginScreenState extends State<LoginScreen> {
       flex: 6,
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white70,
+          color: Colors.white,
           borderRadius: BorderRadius.circular(20),
         ),
         child: Padding(
-          padding: EdgeInsets.only(left: 75, right: 75),
+          padding: EdgeInsets.only(left: 50, right: 50),
           child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
                 Text(
                   'Đăng nhập',
                   style: TextStyle(
-                    fontSize: 25,
+                    fontSize: 23,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 Container(
                   decoration: BoxDecoration(
-                    color: Colors.black45,
-                    borderRadius: BorderRadius.circular(8),
+                    color: Colors.black12,
+                    borderRadius: BorderRadius.circular(5),
                   ),
                   child: TextFormField(
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(color: Colors.black54),
                     controller: textController,
                     keyboardType: TextInputType.text,
                     textAlign: TextAlign.center,
@@ -99,45 +101,61 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                 ),
-                Text('Hoặc đăng nhập qua mạng xã hội'),
+                Text(
+                  'Hoặc đăng nhập qua mạng xã hội',
+                  style: TextStyle(fontSize: 17),
+                ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: FlatButton.icon(
-                          onPressed: () => Utility.handleSignIn().then((FirebaseUser user) => print(user)).catchError((e) => print(e)),
-//                          onPressed: null,
-                          color: Colors.blue,
-                          icon: Icon(Icons.error),
-                          label: Text('Facebook'),
+                    InkWell(
+                      child: Container(
+                        height: 50,
+                        width: 140,
+                        color: Color.fromRGBO(60, 90, 152, 1.0),
+                        child: Center(
+                          child: Text(
+                            'Facebook',
+                            style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
+                        ),
                       ),
                     ),
-                    Container(
-                      height: 45,
-                      width: 120,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: FlatButton.icon(
-                          onPressed: () => Utility.handleSignIn().then((FirebaseUser user) => print(user)).catchError((e) => print(e)),
-//                          onPressed: null,
-                          color: Colors.red,
-                          icon: Icon(Icons.error),
-                          label: Text('Google')
+                    InkWell(
+                      onTap: () => Utility.handleSignIn().then((FirebaseUser user) => print(user)).catchError((e) => print(e)),
+                      child: Container(
+                        height: 50,
+                        width: 140,
+                        color: Color.fromRGBO(219, 68, 55, 1.0),
+                        child: Center(
+                          child: Text(
+                            'Google',
+                            style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
+                        ),
                       ),
                     ),
                   ],
                 ),
-                Text('Hello'),
+                InkWell(
+                  child: ClipOval(
+                    child: Container(
+                      width: 100,
+                      height: 100,
+                      color: Colors.black12,
+                      child: Image.asset("assets/faceid_icon.png"),
+                    ),
+                  ),
+                ),
+                Text('Đăng nhập bằng Face ID')
               ],
             ),
         )
       ),
     );
   }
+
+  _checkIsNeedToShowLoginForm() => isLoadingDone && isEnableLoginForm;
 
   _handleTextController(){
 
