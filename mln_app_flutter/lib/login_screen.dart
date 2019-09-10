@@ -6,6 +6,12 @@ import 'package:flutter/widgets.dart';
 import 'package:mln_app_flutter/main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import 'package:mln_app_flutter/route_controller.dart';
+
+void main() {
+  runApp(LoginScreen());
+}
+
 class LoginScreen extends StatefulWidget {
   @override
   _LoginScreenState createState() => _LoginScreenState();
@@ -17,14 +23,15 @@ class _LoginScreenState extends State<LoginScreen> {
   final textController = TextEditingController();
   @override
   void initState() {
+    super.initState();
     textController.addListener(_handleTextController);
-    Timer(Duration(seconds: 5), () {
+    Timer(Duration(seconds: 5), () async {
+      bool isLoggedIn = await Utility.checkIsLoggedIn();
+      isLoadingDone = true;
       setState(() {
-        isLoadingDone = true;
-        isEnableLoginForm = true;
+        isEnableLoginForm = !isLoggedIn;
       });
     });
-    super.initState();
   }
   @override
   void dispose() {
@@ -35,6 +42,8 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      onGenerateRoute: Router.generateRoute,
+      initialRoute: _checkIsNeedRedirectToNextPage() ? MAIN_ROUTE : LOGIN_ROUTE,
       home: Scaffold(
         body: Container(
           decoration: BoxDecoration(
@@ -51,11 +60,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Image.asset("assets/milano_logo.png"),
                 ),
               ),
-              _checkIsNeedToShowLoginForm() ? Expanded(
+              isEnableLoginForm ? Expanded(
                 flex: 1,
                 child: Container(),
               ) : Container(),
-              _checkIsNeedToShowLoginForm() ? _buildLoginForm() : Container(),
+              isEnableLoginForm ? _buildLoginForm() : Container(),
             ],
           ),
         ),
@@ -155,7 +164,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  _checkIsNeedToShowLoginForm() => isLoadingDone && isEnableLoginForm;
+  _checkIsNeedRedirectToNextPage() => isLoadingDone && !isEnableLoginForm;
 
   _handleTextController(){
 

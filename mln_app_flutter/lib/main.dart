@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:mln_app_flutter/route_controller.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-void main() {
-  runApp(MainApp());
-}
 
 class Utility {
   static final GoogleSignIn _googleSignIn = GoogleSignIn();
@@ -19,6 +16,9 @@ class Utility {
     return user;
   }
 
+  static Future<bool> checkIsLoggedIn() async {
+    return null != await _auth.currentUser();
+  }
 }
 
 class MainApp extends StatelessWidget {
