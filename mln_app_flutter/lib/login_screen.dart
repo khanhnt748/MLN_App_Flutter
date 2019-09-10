@@ -46,7 +46,7 @@ class _LoginScreenState extends State<LoginScreen> {
           child:Column(
             children: <Widget>[
               Expanded(
-                flex: 5,
+                flex: 4,
                 child: Center(
                   child: Image.asset("assets/milano_logo.png"),
                 ),
@@ -65,7 +65,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget _buildLoginForm () {
     return Expanded(
-      flex: 6,
+      flex: 8,
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
@@ -106,12 +106,12 @@ class _LoginScreenState extends State<LoginScreen> {
                   style: TextStyle(fontSize: 17),
                 ),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
                     InkWell(
                       child: Container(
-                        height: 50,
-                        width: 140,
+                        height: 40,
+                        width: 120,
                         color: Color.fromRGBO(60, 90, 152, 1.0),
                         child: Center(
                           child: Text(
@@ -124,8 +124,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     InkWell(
                       onTap: () => Utility.handleSignIn().then((FirebaseUser user) => print(user)).catchError((e) => print(e)),
                       child: Container(
-                        height: 50,
-                        width: 140,
+                        height: 40,
+                        width: 120,
                         color: Color.fromRGBO(219, 68, 55, 1.0),
                         child: Center(
                           child: Text(
@@ -140,8 +140,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 InkWell(
                   child: ClipOval(
                     child: Container(
-                      width: 100,
-                      height: 100,
+                      width: 75,
+                      height: 75,
                       color: Colors.black12,
                       child: Image.asset("assets/faceid_icon.png"),
                     ),
