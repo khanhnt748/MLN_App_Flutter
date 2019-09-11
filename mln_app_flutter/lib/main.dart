@@ -17,15 +17,24 @@ class Utility {
   }
 
   static Future<bool> checkIsLoggedIn() async {
-    return null != await _auth.currentUser();
+    FirebaseUser user = await _auth.currentUser();
+    if(user != null) {
+      print("Utility checkIsLoggedIn: true with user:" + user.toString());
+      return true;
+    }
+    print("Utility checkIsLoggedIn: false");
+    return false;
   }
+}
+
+void main() {
+  runApp(MainApp());
 }
 
 class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Application',
       onGenerateRoute: Router.generateRoute,
       initialRoute: LOGIN_ROUTE,
     );

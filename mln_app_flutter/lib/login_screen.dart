@@ -8,30 +8,19 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:mln_app_flutter/route_controller.dart';
 
-void main() {
-  runApp(LoginScreen());
-}
-
 class LoginScreen extends StatefulWidget {
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  bool isLoadingDone = false;
-  bool isEnableLoginForm = false;
+  bool isLoading = true;
   final textController = TextEditingController();
   @override
   void initState() {
     super.initState();
     textController.addListener(_handleTextController);
-    Timer(Duration(seconds: 5), () async {
-      bool isLoggedIn = await Utility.checkIsLoggedIn();
-      isLoadingDone = true;
-      setState(() {
-        isEnableLoginForm = !isLoggedIn;
-      });
-    });
+    Timer(Duration(seconds: 5), () => _checkAuthorizeStatus());
   }
   @override
   void dispose() {
@@ -42,8 +31,6 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      onGenerateRoute: Router.generateRoute,
-      initialRoute: _checkIsNeedRedirectToNextPage() ? MAIN_ROUTE : LOGIN_ROUTE,
       home: Scaffold(
         body: Container(
           decoration: BoxDecoration(
@@ -60,11 +47,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Image.asset("assets/milano_logo.png"),
                 ),
               ),
-              isEnableLoginForm ? Expanded(
+              isLoading ? Container() : Expanded(
                 flex: 1,
                 child: Container(),
-              ) : Container(),
-              isEnableLoginForm ? _buildLoginForm() : Container(),
+              ),
+              isLoading ? Container() : _buildLoginForm() ,
             ],
           ),
         ),
@@ -131,7 +118,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                     InkWell(
-                      onTap: () => Utility.handleSignIn().then((FirebaseUser user) => print(user)).catchError((e) => print(e)),
+                      onTap: _handleGoogleSignIn,
                       child: Container(
                         height: 40,
                         width: 120,
@@ -163,10 +150,29 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
-
-  _checkIsNeedRedirectToNextPage() => isLoadingDone && !isEnableLoginForm;
+  
+  _checkAuthorizeStatus() {
+    print("_checkAuthorizeStatus!!!");
+    Utility.checkIsLoggedIn().then((value) {
+      if(value) {
+        Navigator.pushReplacementNamed(context, MAIN_ROUTE);
+      } else {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    });
+  }
 
   _handleTextController(){
 
+  }
+
+  _handleGoogleSignIn() {
+    Utility.handleSignIn().then((FirebaseUser user) {
+      if(user != null) {
+        Navigator.pushReplacementNamed(context, MAIN_ROUTE);
+      }
+    }).catchError((e) => print(e));
   }
 }
