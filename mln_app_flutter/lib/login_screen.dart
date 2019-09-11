@@ -105,6 +105,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
                     InkWell(
+                      onTap: _handleFacebookLogin,
                       child: Container(
                         height: 40,
                         width: 120,
@@ -156,6 +157,7 @@ class _LoginScreenState extends State<LoginScreen> {
     Utility.checkIsLoggedIn().then((value) {
       if(value) {
         Navigator.pushReplacementNamed(context, MAIN_ROUTE);
+        return;
       } else {
         setState(() {
           isLoading = false;
@@ -164,13 +166,22 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
-  _handleTextController(){
+  _handleTextController() {
 
   }
 
   _handleGoogleSignIn() {
-    Utility.handleSignIn().then((FirebaseUser user) {
+    Utility.handleGoogleSignIn().then((FirebaseUser user) {
       if(user != null) {
+        Navigator.pushReplacementNamed(context, MAIN_ROUTE);
+      }
+    }).catchError((e) => print(e));
+  }
+
+  _handleFacebookLogin() {
+    Utility.handleFacebookLogin().then((bool result){
+      print("Current facebook result: $result");
+      if (result == true) {
         Navigator.pushReplacementNamed(context, MAIN_ROUTE);
       }
     }).catchError((e) => print(e));
