@@ -16,6 +16,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   bool isLoading = true;
   final textController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
   @override
   void initState() {
     super.initState();
@@ -79,20 +80,30 @@ class _LoginScreenState extends State<LoginScreen> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.black12,
-                    borderRadius: BorderRadius.circular(5),
-                  ),
+                Form(
+                  key: _formKey,
                   child: TextFormField(
-                    style: TextStyle(color: Colors.black54),
                     controller: textController,
-                    keyboardType: TextInputType.text,
-                    textAlign: TextAlign.center,
+                    validator: (value) {
+                      if (!value.isEmpty) {
+                        if(!value.startsWith('0'))
+                          return "Vui lòng nhập đầu số hợp lệ";
+                        if(value.length != 10){
+                          print("Length: " + value.length.toString());
+                          return "Độ dài số điện thoại chưa hợp lệ";
+                        }
+                      }
+                      return null;
+                    },
+                    onChanged: (_) {
+                      if(_formKey.currentState.validate()) {
+                        
+                      }
+                    },
+                    keyboardType: TextInputType.number,
                     decoration: InputDecoration(
-                      hintText: 'Nhập số điện thoại',
-                      hintStyle: TextStyle(color: Colors.black),
-                      border: InputBorder.none,
+                      labelText: 'Nhập số điện thoại',
+                      border: OutlineInputBorder(),
                       suffixIcon: Icon(Icons.arrow_forward_ios)
                     ),
                   ),
