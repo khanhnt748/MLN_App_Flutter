@@ -8,6 +8,7 @@ class Utility {
   static final GoogleSignIn _googleSignIn = GoogleSignIn();
   static final FirebaseAuth _auth = FirebaseAuth.instance;
   static final FacebookLogin _facebookLogin = FacebookLogin();
+//  static final LocalAuthentication _localAuth = LocalAuthentication();
 
   static Future<FirebaseUser> handleGoogleSignIn() async {
     final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
@@ -48,6 +49,28 @@ class Utility {
     print("Utility checkIsFacebookLoggedIn: false");
     return false;
   }
+
+//  static Future<bool> checkIsSupportBiometric() async {
+//    return await _localAuth.canCheckBiometrics;
+//  }
+//
+//  static Future<bool> checkIsSupportFaceID() async {
+//    if(await checkIsSupportBiometric() == true) {
+//      final availableBiometric = await _localAuth.getAvailableBiometrics();
+//      if(availableBiometric.contains(BiometricType.face))
+//        return true;
+//    }
+//    return false;
+//  }
+//
+//  static Future<bool> checkIsSupportFingerPrint() async {
+//    if(await checkIsSupportBiometric() == true) {
+//      final availableBiometric = await _localAuth.getAvailableBiometrics();
+//      if(availableBiometric.contains(BiometricType.fingerprint))
+//        return true;
+//    }
+//    return false;
+//  }
 
   static Future<bool> checkIsLoggedIn() async {
     var isDone = await checkIsGoogleSignedIn();
