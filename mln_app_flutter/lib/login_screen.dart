@@ -8,6 +8,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:mln_app_flutter/route_controller.dart';
 
+import 'package:mln_app_flutter/sms_auth_controller.dart';
+
 class LoginScreen extends StatefulWidget {
   @override
   _LoginScreenState createState() => _LoginScreenState();
@@ -86,25 +88,40 @@ class _LoginScreenState extends State<LoginScreen> {
                     controller: textController,
                     validator: (value) {
                       if (!value.isEmpty) {
-                        if(!value.startsWith('0'))
-                          return "Vui lòng nhập đầu số hợp lệ";
-                        if(value.length != 10){
-                          print("Length: " + value.length.toString());
+//                        if(!value.startsWith('0'))
+//                          return "Vui lòng nhập đầu số hợp lệ";
+                        if(value.length != 9){
                           return "Độ dài số điện thoại chưa hợp lệ";
                         }
                       }
                       return null;
                     },
-                    onChanged: (_) {
+                    onChanged: (phoneNumber) {
                       if(_formKey.currentState.validate()) {
-                        
+                        print("OnChanged");
                       }
+                    },
+                    onFieldSubmitted: (phoneNumber) {
+                     if(_formKey.currentState.validate()) {
+                       print("OnSubmited!!");
+                     }
                     },
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
                       labelText: 'Nhập số điện thoại',
                       border: OutlineInputBorder(),
-                      suffixIcon: Icon(Icons.arrow_forward_ios)
+                      suffixIcon: IconButton(
+                        icon: Icon(Icons.arrow_forward_ios),
+                        onPressed: () {
+                          if(_formKey.currentState.validate()) {
+                            SMSAuthViaFirebase.handleSMSSignIn(
+                              context: this.context,
+                              phoneNumber: textController.text,
+                            );
+                            print("OnPressed!!");
+                          }
+                        }
+                      )
                     ),
                   ),
                 ),

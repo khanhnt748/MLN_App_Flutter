@@ -3,12 +3,14 @@ import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:mln_app_flutter/route_controller.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:mln_app_flutter/sms_auth_controller.dart';
 
 class Utility {
   static final GoogleSignIn _googleSignIn = GoogleSignIn();
   static final FirebaseAuth _auth = FirebaseAuth.instance;
   static final FacebookLogin _facebookLogin = FacebookLogin();
 //  static final LocalAuthentication _localAuth = LocalAuthentication();
+  static String _verificationID;
 
   static Future<FirebaseUser> handleGoogleSignIn() async {
     final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
@@ -71,6 +73,45 @@ class Utility {
 //    }
 //    return false;
 //  }
+
+  static Future<void> sendCodeToPhoneNumber(String phoneNumber, ScaffoldState scaffoldState) async {
+    final PhoneVerificationCompleted verificationCompleted = (AuthCredential phoneAuthCredential) {
+      _auth.signInWithCredential(phoneAuthCredential);
+    };
+    final PhoneVerificationFailed verificationFailed = (AuthException authException) {
+      print("SMS phone verification is failed with code: ${authException.code} -- message: ${authException.message}");
+    };
+    final PhoneCodeSent phoneCodeSent = (String verificationID, [int forceResendingToken]) async {
+      scaffoldState.showSnackBar(
+        SnackBar(
+          content: Text('Vui lòng kiểm tra mã xác nhận từ tin nhắn điện thoại')
+        )
+      );
+      _verificationID = verificationID;
+    };
+    PhoneCodeAutoRetrievalTimeout phoneCodeAutoRetrievalTimeout = (String verificationID) {
+      _verificationID = verificationID;
+    };
+    await _auth.verifyPhoneNumber(
+      phoneNumber: phoneNumber,
+      timeout: Duration(seconds: 180),
+      verificationCompleted: verificationCompleted,
+      verificationFailed: verificationFailed,
+      codeSent: phoneCodeSent,
+      codeAutoRetrievalTimeout: phoneCodeAutoRetrievalTimeout
+    );
+  }
+
+  static Future<FirebaseUser> handlePhoneSMSSignIn(String verificationCode) async {
+    final AuthCredential authCredential = PhoneAuthProvider.getCredential(
+        verificationId: _verificationID,
+        smsCode: verificationCode,
+    );
+    final FirebaseUser smsUser = (await _auth.signInWithCredential(authCredential)).user;
+    final FirebaseUser currentUser = await _auth.currentUser();
+    assert(smsUser.uid == currentUser.uid);
+    return smsUser;
+  }
 
   static Future<bool> checkIsLoggedIn() async {
     var isDone = await checkIsGoogleSignedIn();
